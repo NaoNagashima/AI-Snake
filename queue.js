@@ -1,33 +1,35 @@
-class Queue {
+export default class Queue {
     constructor() {
-        this.items = {}
-        this.frontIndex = 0// tail of snake
-        this.backIndex = 0// head of snake
+      this.elements = [];
+      this.head = 0;
+      this.tail = 0;
     }
-    enqueue(item) {
-        this.items[this.backIndex] = item
-        this.backIndex++
-        return item + ' inserted'
+    enqueue(element) {
+      this.elements[this.tail] = element;
+      this.tail++;
     }
     dequeue() {
-        const item = this.items[this.frontIndex]
-        delete this.items[this.frontIndex]
-        this.frontIndex++
-        return item
+        if (this.length == 0) return null
+      const item = this.elements[this.head];
+      delete this.elements[this.head];
+      this.head++;
+      return item;
     }
     peek() {
-        return this.items[this.frontIndex]
+      return this.elements[this.head];
     }
 
-    peek_front(){
-        return this.items[this.backIndex]
+    find(element) {
+        for (var i=0; i<this.length; i++){
+          if (this.elements[i][0] == element[0] && this.elements[i][1] == element[1]) return true
+        }
+        return false
     }
 
-    get_length(){
-        return this.items.length;
+    get length() {
+      return this.tail - this.head;
     }
-
-    get printQueue() {
-        return this.items;
+    get isEmpty() {
+      return this.length === 0;
     }
-}
+  }

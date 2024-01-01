@@ -6,14 +6,12 @@ const fps = 10;
 canvas.width = window.innerWidth;
 canvas.height = window.innerHeight;
 
-var start_pos = 100;
-var row_count = 20;
-var col_count = 20;
-var cell_length = 25;
+const start_pos = 100;
+const row_count = 20;
+const col_count = 20;
+const cell_length = 25;
 
 var apple_count = 0;
-
-const snake_queue = [];
 
 var grid = [];
 for (let i = 0; i < row_count; i++) {
@@ -26,7 +24,10 @@ for (let i = 0; i < row_count; i++) {
 var current_pos = [0, 0];
 grid[0][0] = 1;
 
-var moving_dir = "left";
+var snake_queue = [];
+snake_queue.push(current_pos);
+
+var moving_dir = "right";
 
 var x = 200;
 var y = 200;
@@ -39,15 +40,17 @@ function generate_apple(){
 }
 
 function eat_apple(x, y){
-    console.log(x,y);
     if (x < 20 && y < 20 && grid[x][y] == 2){
         apple_count += 1;
+        snake_queue.push(current_pos);
+        grid[x][y] = 0;
         generate_apple();
     }
-
 }
 
 function draw_grid(){
+
+    snake_queue.shift();
     for (let row = 0; row < row_count; row++){
         for (let col = 0; col < col_count; col++){
             if (grid[row][col] == 0){
@@ -58,8 +61,11 @@ function draw_grid(){
                 }
             } else if(grid[row][col] == 2){
                 ctx.fillStyle = 'red';
-            } else{
-                ctx.fillStyle = 'blue';
+            }
+            for (var i=0; i<snake_queue.length; i++){
+                if (snake_queue[i][0] == row && snake_queue[i][1] == col) {
+                    ctx.fillStyle = 'blue';
+                }
             }
             let x_pos = row*cell_length + start_pos;
             let y_pos = col*cell_length + start_pos;
@@ -67,7 +73,6 @@ function draw_grid(){
             ctx.fillRect(x_pos, y_pos, cell_length, cell_length);
         }
     }
-
 }
 
 function next_snake_pos(){
@@ -78,37 +83,34 @@ function next_snake_pos(){
     switch(moving_dir){
         case "right":
             if(snake_row < row_count-1){
-                eat_apple(snake_row+1, snake_col);
-                grid[snake_row+1][snake_col] = 1;
+                eat_apple(snake_row+1, snake_col, 'right');
+                snake_queue.push([snake_row+1, snake_col]);
                 current_pos = [snake_row+1, snake_col];
-                grid[snake_row][snake_col] = 0;
             }
             break;
         case "left":
             if(snake_row > 0){
-                eat_apple(snake_row-1, snake_col);
-                grid[snake_row-1][snake_col] = 1;
+                eat_apple(snake_row-1, snake_col, 'left');
+                snake_queue.push([snake_row-1, snake_col]);
                 current_pos = [snake_row-1, snake_col];
-                grid[snake_row][snake_col] = 0;
             }
             break;
         case "up":
             if(snake_col > 0){
-                eat_apple(snake_row, snake_col-1);
-                grid[snake_row][snake_col-1] = 1;
+                eat_apple(snake_row, snake_col-1, 'up');
+                snake_queue.push([snake_row, snake_col-1]);
                 current_pos = [snake_row, snake_col-1];
-                grid[snake_row][snake_col] = 0;
             }
             break;
         case "down":
             if(snake_col < col_count-1){
-                eat_apple(snake_row, snake_col+1);
-                grid[snake_row][snake_col+1] = 1;
+                eat_apple(snake_row, snake_col+1, 'down');
+                snake_queue.push([snake_row, snake_col+1]);
                 current_pos = [snake_row, snake_col+1];
-                grid[snake_row][snake_col] = 0;
             }
             break;
     }
+    console.log(snake_queue)
 
 }
 
@@ -139,3 +141,4 @@ document.onkeydown = function (event) {
         break;
     }
 };
+
