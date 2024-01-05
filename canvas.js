@@ -19,6 +19,11 @@ for (let i = 0; i < row_count; i++) {
     }
 }
 
+const snake_head_up = document.getElementById("snake_head_up");
+const snake_head_left = document.getElementById("snake_head_left");
+const snake_head_right = document.getElementById("snake_head_right");
+const snake_head_down = document.getElementById("snake_head_down");
+
 var current_pos = [0, 0];
 var snake_queue = [];
 snake_queue.push(current_pos);
@@ -51,7 +56,7 @@ function generate_apple(){
 function eat_apple(x, y){
     if (x < 20 && y < 20 && grid[x][y] == 2){
         apple_count += 1;
-        fps += 1;
+        fps += 0.5;
         snake_queue.push(current_pos);
         grid[x][y] = 0;
         generate_apple();
@@ -75,11 +80,28 @@ function draw_grid(){
             } else if(grid[row][col] == 2){
                 ctx.fillStyle = 'red';
             }
-            if (hit_snake(row, col)) ctx.fillStyle = 'blue';
+            if (hit_snake(row, col)){
+                switch(moving_dir){
+                    case "right":
+                        ctx.drawImage(snake_head_right, row*cell_length + start_pos, col*cell_length + start_pos);
+                        break;
+                    case "left":
+                        ctx.drawImage(snake_head_left, row*cell_length + start_pos, col*cell_length + start_pos);
+                        break;
+                    case "up":
+                        ctx.drawImage(snake_head_up, row*cell_length + start_pos, col*cell_length + start_pos);
+                        break;
+                    case "down":
+                        ctx.drawImage(snake_head_down, row*cell_length + start_pos, col*cell_length + start_pos);
+                        break;
+                }
+            }
+            else{
             let x_pos = row*cell_length + start_pos;
             let y_pos = col*cell_length + start_pos;
             
             ctx.fillRect(x_pos, y_pos, cell_length, cell_length);
+            }
         }
     }
 }
